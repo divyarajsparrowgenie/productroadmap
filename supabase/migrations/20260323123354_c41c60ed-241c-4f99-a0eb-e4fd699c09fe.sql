@@ -1,0 +1,1 @@
+ALTER TABLE public.tasks ADD COLUMN priority integer NOT NULL DEFAULT 0;
