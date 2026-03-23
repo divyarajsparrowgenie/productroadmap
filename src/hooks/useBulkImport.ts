@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
 
 export type FeatureRow = { title: string; description?: string };
 
@@ -26,13 +25,19 @@ export type TaskRow = {
   priority?: number;
 };
 
+async function getUserId(): Promise<string> {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.user?.id) throw new Error("Not authenticated. Please sign in and try again.");
+  return session.user.id;
+}
+
 export function useBulkImportFeatures() {
   const qc = useQueryClient();
-  const { user } = useAuth();
   return useMutation({
     mutationFn: async (rows: FeatureRow[]) => {
+      const userId = await getUserId();
       const { error } = await supabase.from("features").insert(
-        rows.map((r) => ({ title: r.title, description: r.description || null, user_id: user?.id }))
+        rows.map((r) => ({ title: r.title, description: r.description || null, user_id: userId }))
       );
       if (error) throw error;
     },
@@ -46,9 +51,10 @@ export function useBulkImportFeatures() {
 
 export function useBulkImportFeaturesWithVersions() {
   const qc = useQueryClient();
-  const { user } = useAuth();
   return useMutation({
     mutationFn: async (rows: FeatureVersionRow[]) => {
+      const userId = await getUserId();
+
       // Group by feature title
       const featureMap = new Map<string, string>();
       const uniqueFeatures = [...new Map(rows.map((r) => [r.feature_title, r])).values()];
@@ -60,13 +66,14 @@ export function useBulkImportFeaturesWithVersions() {
           .from("features")
           .select("id")
           .eq("title", f.feature_title)
+          .eq("user_id", userId)
           .maybeSingle();
         if (existing) {
           featureMap.set(f.feature_title, existing.id);
         } else {
           const { data, error } = await supabase
             .from("features")
-            .insert({ title: f.feature_title, description: f.feature_description || null, user_id: user?.id })
+            .insert({ title: f.feature_title, description: f.feature_description || null, user_id: userId })
             .select("id")
             .single();
           if (error) throw error;
