@@ -1,4 +1,4 @@
-import { LayoutDashboard, Layers, KanbanSquare, Map, LogOut } from "lucide-react";
+import { LayoutDashboard, Layers, KanbanSquare, Map as MapIcon, LogOut } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -21,7 +21,7 @@ const items = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Features", url: "/features", icon: Layers },
   { title: "Kanban", url: "/kanban", icon: KanbanSquare },
-  { title: "Roadmap", url: "/roadmap", icon: Map },
+  { title: "Roadmap", url: "/roadmap", icon: MapIcon },
 ];
 
 export function AppSidebar() {

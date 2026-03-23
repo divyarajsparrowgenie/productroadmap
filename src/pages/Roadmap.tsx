@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Map } from "lucide-react";
+import { Map as MapIcon } from "lucide-react";
 import { useAllVersionsWithFeatures } from "@/hooks/useFeatures";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -89,7 +89,7 @@ export default function Roadmap() {
     <div className="space-y-6 animate-fade-in">
       <div>
         <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-          <Map className="h-6 w-6" /> Roadmap
+          <MapIcon className="h-6 w-6" /> Roadmap
         </h1>
         <p className="text-sm text-muted-foreground">Version timeline by due date</p>
       </div>
