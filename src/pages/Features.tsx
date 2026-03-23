@@ -17,6 +17,7 @@ import { useAllFeatureTags, useSetFeatureTags } from "@/hooks/useTags";
 import { useArchiveFeature, useUnarchiveFeature, useDuplicateFeature } from "@/hooks/useArchive";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import CustomFieldsPanel from "@/components/CustomFieldsPanel";
 
 export default function Features() {
   const { data: features = [] } = useFeatures();
@@ -224,6 +225,11 @@ export default function Features() {
               <label className="text-sm font-medium block mb-1.5">Tags</label>
               <TagSelector selectedTagIds={selectedTagIds} onChange={setSelectedTagIds} />
             </div>
+            {editId && (
+              <div className="border-t pt-3">
+                <CustomFieldsPanel entityId={editId} entityType="feature" />
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>

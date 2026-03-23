@@ -27,6 +27,7 @@ import ArchiveButton from "@/components/ArchiveButton";
 import InlineEdit from "@/components/InlineEdit";
 import { useArchiveVersion } from "@/hooks/useArchive";
 import SprintBoard from "@/components/SprintBoard";
+import CustomFieldsPanel from "@/components/CustomFieldsPanel";
 
 const VERSION_STATUSES = ["Planned", "In Progress", "Released", "Completed"];
 const TASK_STATUSES = ["Todo", "Doing", "Done"];
@@ -299,6 +300,7 @@ export default function FeatureDetail() {
             <TabsList className="w-full">
               <TabsTrigger value="details" className="flex-1">Details</TabsTrigger>
               {vEditId && <TabsTrigger value="history" className="flex-1">Score History</TabsTrigger>}
+              {vEditId && <TabsTrigger value="custom" className="flex-1">Custom Fields</TabsTrigger>}
             </TabsList>
             <TabsContent value="details" className="space-y-4 mt-4">
               <div><label className="text-sm font-medium">Name</label><Input value={vName} onChange={(e) => setVName(e.target.value)} placeholder="e.g. v1.0" /></div>
@@ -330,6 +332,11 @@ export default function FeatureDetail() {
                 <ScoreHistoryChart versionId={vEditId} />
               </TabsContent>
             )}
+            {vEditId && (
+              <TabsContent value="custom" className="mt-4">
+                <CustomFieldsPanel entityId={vEditId} entityType="version" />
+              </TabsContent>
+            )}
           </Tabs>
           <DialogFooter>
             <Button variant="outline" onClick={() => setVDialogOpen(false)}>Cancel</Button>
@@ -350,9 +357,14 @@ export default function FeatureDetail() {
               <AssigneeSelector value={tAssigneeId} onChange={setTAssigneeId} />
             </div>
             {tEditId && (
-              <div className="border-t pt-3">
-                <TaskComments taskId={tEditId} />
-              </div>
+              <>
+                <div className="border-t pt-3">
+                  <CustomFieldsPanel entityId={tEditId} entityType="task" />
+                </div>
+                <div className="border-t pt-3">
+                  <TaskComments taskId={tEditId} />
+                </div>
+              </>
             )}
           </div>
           <DialogFooter>
