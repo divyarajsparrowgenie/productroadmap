@@ -1,19 +1,24 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { AlertTriangle, ArrowUp, ArrowDown, Minus, Zap } from "lucide-react";
+import { AlertTriangle, ArrowUp, ArrowDown, Minus, Zap, GitCompare } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/StatusBadge";
 import { useAllVersionsWithFeatures, useAllTasks } from "@/hooks/useFeatures";
 import { PrioritizationMatrix } from "@/components/PrioritizationMatrix";
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import CycleTimeChart from "@/components/CycleTimeChart";
+import ActivityFeed from "@/components/ActivityFeed";
+import WsjfCompare from "@/components/WsjfCompare";
 
 const PIE_COLORS = ["hsl(210, 25%, 93%)", "hsl(216, 70%, 45%)", "hsl(142, 71%, 45%)"];
 
 export default function Dashboard() {
   const { data: versionsWithFeatures = [] } = useAllVersionsWithFeatures();
   const { data: allTasks = [] } = useAllTasks();
+  const [compareOpen, setCompareOpen] = useState(false);
 
   const activeVersions = versionsWithFeatures.filter((v) => v.status !== "Completed");
   const activeVersionIds = new Set(activeVersions.map((v) => v.id));
@@ -253,6 +258,34 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </CardContent>
       </Card>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Cycle Time</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CycleTimeChart />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2 flex flex-row items-center justify-between">
+            <CardTitle className="text-base">Activity Feed</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ActivityFeed limit={15} />
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="flex justify-end">
+        <Button variant="outline" size="sm" onClick={() => setCompareOpen(true)}>
+          <GitCompare className="h-4 w-4 mr-1" />Compare WSJF Scores
+        </Button>
+      </div>
+
+      <WsjfCompare open={compareOpen} onClose={() => setCompareOpen(false)} />
     </div>
   );
 }

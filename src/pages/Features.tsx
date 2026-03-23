@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Trash2, Pencil, Search, Upload, Download } from "lucide-react";
+import { Plus, Trash2, Pencil, Search, Upload, Download, Copy, Archive, ArchiveRestore } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -14,6 +14,9 @@ import ExportDialog from "@/components/ExportDialog";
 import TagBadge from "@/components/TagBadge";
 import TagSelector from "@/components/TagSelector";
 import { useAllFeatureTags, useSetFeatureTags } from "@/hooks/useTags";
+import { useArchiveFeature, useUnarchiveFeature, useDuplicateFeature } from "@/hooks/useArchive";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 export default function Features() {
   const { data: features = [] } = useFeatures();
@@ -33,6 +36,10 @@ export default function Features() {
   const [description, setDescription] = useState("");
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [search, setSearch] = useState("");
+  const [showArchived, setShowArchived] = useState(false);
+  const archiveFeature = useArchiveFeature();
+  const unarchiveFeature = useUnarchiveFeature();
+  const duplicateFeature = useDuplicateFeature();
 
   // Build feature->tags map
   const featureTagsMap = useMemo(() => {
@@ -46,10 +53,13 @@ export default function Features() {
   }, [allFeatureTags]);
 
   const filteredFeatures = useMemo(() => {
-    if (!search.trim()) return features;
-    const q = search.toLowerCase();
-    return features.filter((f) => f.title.toLowerCase().includes(q) || f.description?.toLowerCase().includes(q));
-  }, [features, search]);
+    let list = showArchived ? features : features.filter((f) => !(f as any).archived_at);
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      list = list.filter((f) => f.title.toLowerCase().includes(q) || f.description?.toLowerCase().includes(q));
+    }
+    return list;
+  }, [features, search, showArchived]);
 
   const getFeatureStats = (featureId: string) => {
     const featureVersions = versions.filter((v) => v.feature_id === featureId);
@@ -107,7 +117,8 @@ export default function Features() {
         </div>
       </div>
 
-      <div className="relative">
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           value={search}
@@ -115,6 +126,11 @@ export default function Features() {
           placeholder="Search features..."
           className="pl-9"
         />
+      </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <Switch id="show-archived" checked={showArchived} onCheckedChange={setShowArchived} />
+          <Label htmlFor="show-archived" className="text-sm text-muted-foreground cursor-pointer">Show archived</Label>
+        </div>
       </div>
 
       <Card>
@@ -141,7 +157,7 @@ export default function Features() {
                   const stats = getFeatureStats(f.id);
                   const fTags = featureTagsMap.get(f.id) ?? [];
                   return (
-                    <TableRow key={f.id} className="cursor-pointer transition-colors">
+                    <TableRow key={f.id} className={`cursor-pointer transition-colors ${(f as any).archived_at ? "opacity-50" : ""}`}>
                       <TableCell>
                         <Link to={`/features/${f.id}`} className="font-medium text-primary hover:underline">{f.title}</Link>
                         {f.description && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{f.description}</p>}
@@ -160,9 +176,21 @@ export default function Features() {
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" className="h-7 w-7" title="Duplicate" onClick={(e) => { e.stopPropagation(); duplicateFeature.mutate(f.id); }}>
+                            <Copy className="h-3.5 w-3.5" />
+                          </Button>
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); openEdit(f); }}>
                             <Pencil className="h-3.5 w-3.5" />
                           </Button>
+                          {(f as any).archived_at ? (
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" title="Restore" onClick={(e) => { e.stopPropagation(); unarchiveFeature.mutate(f.id); }}>
+                              <ArchiveRestore className="h-3.5 w-3.5" />
+                            </Button>
+                          ) : (
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" title="Archive" onClick={(e) => { e.stopPropagation(); archiveFeature.mutate(f.id); }}>
+                              <Archive className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
                           <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={(e) => { e.stopPropagation(); deleteFeature.mutate(f.id); }}>
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>

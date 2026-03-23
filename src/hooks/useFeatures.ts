@@ -3,6 +3,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
+async function logActivity(userId: string | undefined, action: string, entityType: string, entityId?: string, metadata?: Record<string, unknown>) {
+  if (!userId) return;
+  await supabase.from("activity_log").insert({ user_id: userId, action, entity_type: entityType, entity_id: entityId ?? null, metadata: metadata ?? null });
+}
+
 export type Feature = {
   id: string;
   title: string;
@@ -128,10 +133,12 @@ export function useCreateFeature() {
         .select()
         .single();
       if (error) throw error;
+      await logActivity(user?.id, "created_feature", "feature", (data as any).id, { title: input.title });
       return data;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["features"] });
+      qc.invalidateQueries({ queryKey: ["activity-log"] });
       toast.success("Feature created");
     },
     onError: (e) => toast.error(e.message),
@@ -261,15 +268,18 @@ export function useDeleteVersion() {
 
 export function useCreateTask() {
   const qc = useQueryClient();
+  const { user } = useAuth();
   return useMutation({
     mutationFn: async (input: { version_id: string; title: string; status?: string; due_date?: string | null; priority?: number }) => {
       const { data, error } = await supabase.from("tasks").insert(input).select().single();
       if (error) throw error;
+      await logActivity(user?.id, "created_task", "task", (data as any).id, { title: input.title });
       return data;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["tasks"] });
       qc.invalidateQueries({ queryKey: ["all-tasks"] });
+      qc.invalidateQueries({ queryKey: ["activity-log"] });
       toast.success("Task created");
     },
     onError: (e) => toast.error(e.message),
@@ -278,6 +288,7 @@ export function useCreateTask() {
 
 export function useUpdateTask() {
   const qc = useQueryClient();
+  const { user } = useAuth();
   return useMutation({
     mutationFn: async ({
       id,
@@ -289,7 +300,14 @@ export function useUpdateTask() {
       due_date?: string | null;
       completed_at?: string | null;
       priority?: number;
+      [key: string]: unknown;
     }) => {
+      // Fetch current status for logging
+      let prevStatus: string | undefined;
+      if (input.status) {
+        const { data: curr } = await supabase.from("tasks").select("status").eq("id", id).single();
+        prevStatus = curr?.status;
+      }
       // Auto-set completed_at when status changes to Done
       if (input.status === "Done" && !input.completed_at) {
         input.completed_at = new Date().toISOString();
@@ -299,10 +317,16 @@ export function useUpdateTask() {
       }
       const { error } = await supabase.from("tasks").update(input).eq("id", id);
       if (error) throw error;
+      if (input.status && prevStatus !== input.status) {
+        await logActivity(user?.id, "updated_status", "task", id, { from: prevStatus, to: input.status });
+      } else if (input.title) {
+        await logActivity(user?.id, "updated_task", "task", id, { title: input.title });
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["tasks"] });
       qc.invalidateQueries({ queryKey: ["all-tasks"] });
+      qc.invalidateQueries({ queryKey: ["activity-log"] });
     },
     onError: (e) => toast.error(e.message),
   });

@@ -4,6 +4,7 @@ import { useAllVersionsWithFeatures } from "@/hooks/useFeatures";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import ExportRoadmapButton from "@/components/ExportRoadmapButton";
 
 const STATUS_COLORS: Record<string, string> = {
   Planned: "bg-slate-400",
@@ -87,11 +88,14 @@ export default function Roadmap() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-          <MapIcon className="h-6 w-6" /> Roadmap
-        </h1>
-        <p className="text-sm text-muted-foreground">Version timeline by due date</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+            <MapIcon className="h-6 w-6" /> Roadmap
+          </h1>
+          <p className="text-sm text-muted-foreground">Version timeline by due date</p>
+        </div>
+        <ExportRoadmapButton targetId="roadmap-export-target" />
       </div>
 
       {/* Legend */}
@@ -112,7 +116,7 @@ export default function Roadmap() {
         </Card>
       ) : (
         <Card>
-          <CardContent className="p-4 overflow-x-auto">
+          <CardContent id="roadmap-export-target" className="p-4 overflow-x-auto">
             {/* Month headers */}
             <div className="flex mb-2" style={{ minWidth: `${Math.max(600, months.length * 80)}px` }}>
               <div className="w-40 flex-shrink-0" />

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Trash2, Pencil, ChevronUp, ChevronDown, MessageSquare } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Pencil, ChevronUp, ChevronDown, MessageSquare, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -22,6 +22,11 @@ import {
 import { useVersionScoreHistory } from "@/hooks/useScoreHistory";
 import { useTaskCommentCount } from "@/hooks/useComments";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import WatchButton from "@/components/WatchButton";
+import ArchiveButton from "@/components/ArchiveButton";
+import InlineEdit from "@/components/InlineEdit";
+import { useArchiveVersion } from "@/hooks/useArchive";
+import SprintBoard from "@/components/SprintBoard";
 
 const VERSION_STATUSES = ["Planned", "In Progress", "Released", "Completed"];
 const TASK_STATUSES = ["Todo", "Doing", "Done"];
@@ -143,6 +148,7 @@ export default function FeatureDetail() {
   };
 
   const wsjfScore = vJS > 0 ? ((vBV + vTC + vRR) / vJS).toFixed(1) : "—";
+  const archiveVersion = useArchiveVersion();
 
   if (!feature) return null;
 
@@ -199,6 +205,9 @@ export default function FeatureDetail() {
                     <div className="flex gap-1">
                       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); openEditVersion(v); }}><Pencil className="h-3.5 w-3.5" /></Button>
                       <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={(e) => { e.stopPropagation(); deleteVersion.mutate(v.id); }}><Trash2 className="h-3.5 w-3.5" /></Button>
+                      <span onClick={(e) => e.stopPropagation()}>
+                        <ArchiveButton label={v.version_name} onConfirm={() => archiveVersion.mutate(v.id)} size="icon" />
+                      </span>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -245,7 +254,11 @@ export default function FeatureDetail() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <span className="font-medium">{t.title}</span>
+                        <InlineEdit
+                          value={t.title}
+                          onSave={(v) => updateTask.mutate({ id: t.id, title: v })}
+                          className="font-medium"
+                        />
                         <TaskCommentBadge taskId={t.id} />
                       </div>
                     </TableCell>
@@ -258,6 +271,7 @@ export default function FeatureDetail() {
                     <TableCell className="text-sm">{t.due_date || "—"}</TableCell>
                     <TableCell>
                       <div className="flex gap-1">
+                        <WatchButton taskId={t.id} />
                         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEditTask(t)}><Pencil className="h-3.5 w-3.5" /></Button>
                         <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => deleteTask.mutate(t.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
                       </div>
@@ -269,6 +283,13 @@ export default function FeatureDetail() {
           </CardContent>
         </Card>
       )}
+
+      {/* Sprint Board */}
+      <Card>
+        <CardContent className="pt-6">
+          <SprintBoard featureId={id} />
+        </CardContent>
+      </Card>
 
       {/* Version Dialog */}
       <Dialog open={vDialogOpen} onOpenChange={setVDialogOpen}>
