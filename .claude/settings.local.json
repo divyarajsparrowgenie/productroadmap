@@ -5,7 +5,10 @@
       "Bash(git init:*)",
       "Bash(git remote:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(/Users/divyaraj.murugan/Downloads/wsjf-focus-tracker-main/supabase/run_all_migrations.sql:*)",
+      "Bash(node -e \"const df = require\\(''date-fns''\\); console.log\\(typeof df.eachQuarterOfInterval, typeof df.startOfQuarter, typeof df.endOfQuarter, typeof df.eachYearOfInterval\\)\")"
     ]
   }
 }

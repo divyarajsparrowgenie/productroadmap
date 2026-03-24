@@ -17,6 +17,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import JiraIntegration from "./pages/JiraIntegration";
 import Notifications from "./pages/Notifications";
+import Team from "./pages/Team";
 import PublicRoadmap from "./pages/PublicRoadmap";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -75,6 +76,7 @@ function AppRoutes() {
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/integrations/jira" element={<JiraIntegration />} />
                   <Route path="/notifications" element={<Notifications />} />
+                  <Route path="/team" element={<Team />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </AppLayout>

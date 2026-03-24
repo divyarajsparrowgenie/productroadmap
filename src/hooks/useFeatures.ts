@@ -12,6 +12,8 @@ export type Feature = {
   id: string;
   title: string;
   description: string | null;
+  color: string | null;
+  archived_at: string | null;
   created_at: string;
 };
 
@@ -20,12 +22,14 @@ export type Version = {
   feature_id: string;
   version_name: string;
   status: string;
+  start_date: string | null;
   due_date: string | null;
   business_value: number;
   time_criticality: number;
   risk_reduction: number;
   job_size: number;
   wsjf_score: number | null;
+  archived_at: string | null;
   created_at: string;
 };
 
@@ -148,7 +152,7 @@ export function useCreateFeature() {
 export function useUpdateFeature() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, ...input }: { id: string; title?: string; description?: string }) => {
+    mutationFn: async ({ id, ...input }: { id: string; title?: string; description?: string; color?: string | null }) => {
       const { error } = await supabase.from("features").update(input).eq("id", id);
       if (error) throw error;
     },
@@ -182,6 +186,7 @@ export function useCreateVersion() {
       feature_id: string;
       version_name: string;
       status?: string;
+      start_date?: string | null;
       due_date?: string | null;
       business_value?: number;
       time_criticality?: number;
@@ -211,6 +216,7 @@ export function useUpdateVersion() {
       id: string;
       version_name?: string;
       status?: string;
+      start_date?: string | null;
       due_date?: string | null;
       business_value?: number;
       time_criticality?: number;

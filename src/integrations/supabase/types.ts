@@ -125,6 +125,7 @@ export type Database = {
       features: {
         Row: {
           archived_at: string | null
+          color: string | null
           created_at: string
           description: string | null
           id: string
@@ -133,6 +134,7 @@ export type Database = {
         }
         Insert: {
           archived_at?: string | null
+          color?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -141,11 +143,63 @@ export type Database = {
         }
         Update: {
           archived_at?: string | null
+          color?: string | null
           created_at?: string
           description?: string | null
           id?: string
           title?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      milestones: {
+        Row: {
+          id: string
+          feature_id: string
+          title: string
+          date: string
+          color: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          feature_id: string
+          title: string
+          date: string
+          color?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          feature_id?: string
+          title?: string
+          date?: string
+          color?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      version_dependencies: {
+        Row: {
+          id: string
+          source_id: string
+          target_id: string
+          dependency_type: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          source_id: string
+          target_id: string
+          dependency_type?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          source_id?: string
+          target_id?: string
+          dependency_type?: string
+          created_at?: string
         }
         Relationships: []
       }
@@ -475,6 +529,7 @@ export type Database = {
           jira_epic_key: string | null
           job_size: number
           risk_reduction: number
+          start_date: string | null
           status: string
           time_criticality: number
           version_name: string
@@ -490,6 +545,7 @@ export type Database = {
           jira_epic_key?: string | null
           job_size?: number
           risk_reduction?: number
+          start_date?: string | null
           status?: string
           time_criticality?: number
           version_name: string
@@ -505,6 +561,7 @@ export type Database = {
           jira_epic_key?: string | null
           job_size?: number
           risk_reduction?: number
+          start_date?: string | null
           status?: string
           time_criticality?: number
           version_name?: string

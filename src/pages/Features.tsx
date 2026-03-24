@@ -35,6 +35,7 @@ export default function Features() {
   const [editId, setEditId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [featureColor, setFeatureColor] = useState<string>("#6366f1");
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [showArchived, setShowArchived] = useState(false);
@@ -73,12 +74,13 @@ export default function Features() {
   };
 
   const openCreate = () => {
-    setEditId(null); setTitle(""); setDescription(""); setSelectedTagIds([]); setDialogOpen(true);
+    setEditId(null); setTitle(""); setDescription(""); setFeatureColor("#6366f1"); setSelectedTagIds([]); setDialogOpen(true);
   };
-  const openEdit = (f: { id: string; title: string; description: string | null }) => {
+  const openEdit = (f: { id: string; title: string; description: string | null; color?: string | null }) => {
     setEditId(f.id);
     setTitle(f.title);
     setDescription(f.description || "");
+    setFeatureColor(f.color ?? "#6366f1");
     const currentTags = featureTagsMap.get(f.id) ?? [];
     setSelectedTagIds(currentTags.map((t) => t.tag_id));
     setDialogOpen(true);
@@ -87,7 +89,7 @@ export default function Features() {
     if (!title.trim()) return;
     let featureId = editId;
     if (editId) {
-      await updateFeature.mutateAsync({ id: editId, title, description });
+      await updateFeature.mutateAsync({ id: editId, title, description, color: featureColor });
     } else {
       const result = await createFeature.mutateAsync({ title, description });
       featureId = (result as any).id;
@@ -220,6 +222,17 @@ export default function Features() {
             <div>
               <label className="text-sm font-medium">Description</label>
               <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Optional description" rows={3} />
+            </div>
+            <div className="flex items-center gap-3">
+              <label className="text-sm font-medium">Roadmap Color</label>
+              <input
+                type="color"
+                value={featureColor}
+                onChange={(e) => setFeatureColor(e.target.value)}
+                className="w-8 h-8 rounded cursor-pointer border border-input"
+                title="Choose color for this feature on the roadmap"
+              />
+              <span className="text-xs text-muted-foreground">{featureColor}</span>
             </div>
             <div>
               <label className="text-sm font-medium block mb-1.5">Tags</label>

@@ -1,4 +1,4 @@
-import { LayoutDashboard, Layers, KanbanSquare, Map as MapIcon, LogOut, CalendarDays, Settings, User, Plug } from "lucide-react";
+import { LayoutDashboard, Layers, KanbanSquare, Map as MapIcon, LogOut, CalendarDays, Settings, User, Plug, Users } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -23,6 +23,7 @@ const mainItems = [
   { title: "Kanban", url: "/kanban", icon: KanbanSquare },
   { title: "Roadmap", url: "/roadmap", icon: MapIcon },
   { title: "Sprint", url: "/sprint", icon: CalendarDays },
+  { title: "Team", url: "/team", icon: Users },
 ];
 
 const settingsItems = [
