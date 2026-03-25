@@ -33,7 +33,7 @@ export function AppLayout({ children, onSearchOpen }: Props) {
               <ThemeToggle />
             </div>
           </header>
-          <main className="flex-1 overflow-auto p-6">{children}</main>
+          <main className="flex-1 overflow-auto flex flex-col">{children}</main>
         </div>
       </div>
     </SidebarProvider>

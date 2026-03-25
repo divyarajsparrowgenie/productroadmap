@@ -6,7 +6,7 @@ export default function JiraIntegration() {
   const { data: conn } = useJiraConnection();
 
   return (
-    <div className="space-y-6 max-w-3xl animate-fade-in">
+    <div className="p-6 space-y-6 max-w-3xl animate-fade-in">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Jira Integration</h1>
         <p className="text-sm text-muted-foreground mt-1">

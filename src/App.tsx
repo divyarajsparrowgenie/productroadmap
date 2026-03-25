@@ -25,6 +25,7 @@ import NotFound from "./pages/NotFound";
 import SearchPalette from "./components/SearchPalette";
 import KeyboardShortcutsHelp from "./components/KeyboardShortcutsHelp";
 import { useRealtime } from "./hooks/useRealtime";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ function AppRoutes() {
     <>
       <SearchPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
       <KeyboardShortcutsHelp open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
+      <ErrorBoundary>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -84,6 +86,7 @@ function AppRoutes() {
           }
         />
       </Routes>
+      </ErrorBoundary>
     </>
   );
 }

@@ -154,7 +154,7 @@ export default function FeatureDetail() {
   if (!feature) return null;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="p-6 space-y-6 animate-fade-in">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate("/features")}>
           <ArrowLeft className="h-4 w-4" />

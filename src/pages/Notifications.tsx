@@ -12,7 +12,7 @@ export default function Notifications() {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <div className="space-y-4 max-w-2xl animate-fade-in">
+    <div className="p-6 space-y-4 max-w-2xl animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">

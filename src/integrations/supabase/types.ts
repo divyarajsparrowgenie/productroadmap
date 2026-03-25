@@ -314,7 +314,7 @@ export type Database = {
         }
         Relationships: []
       }
-      score_history: {
+      version_score_history: {
         Row: {
           id: string
           version_id: string

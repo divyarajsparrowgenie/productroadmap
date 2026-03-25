@@ -132,7 +132,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="space-y-6 max-w-3xl animate-fade-in">
+    <div className="p-6 space-y-6 max-w-3xl animate-fade-in">
       <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
 
       <Card>

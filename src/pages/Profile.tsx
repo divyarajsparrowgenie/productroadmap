@@ -54,7 +54,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="space-y-6 max-w-2xl animate-fade-in">
+    <div className="p-6 space-y-6 max-w-2xl animate-fade-in">
       <h1 className="text-2xl font-bold tracking-tight">Profile</h1>
 
       <Card>

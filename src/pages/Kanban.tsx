@@ -37,7 +37,7 @@ export default function Kanban() {
   );
 
   return (
-    <div className="space-y-4 animate-fade-in">
+    <div className="p-6 space-y-4 animate-fade-in">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h1 className="text-2xl font-bold tracking-tight">Kanban Board</h1>
         <div className="flex gap-2">

@@ -14,7 +14,7 @@ export default function Sprint() {
   const selectedSprint = sprints.find((s) => s.id === selectedSprintId);
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="p-6 space-y-6 animate-fade-in">
       <h1 className="text-2xl font-bold tracking-tight">Sprint Planning</h1>
 
       {sprints.length > 0 && (
