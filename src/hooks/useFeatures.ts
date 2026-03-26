@@ -106,8 +106,8 @@ export function useAllVersionsWithFeatures() {
       const { data: features, error: fErr } = await supabase.from("features").select("*");
       if (fErr) throw fErr;
 
-      const featureMap = new Map((features as Feature[]).map((f) => [f.id, f]));
-      return (versions as Version[]).map((v) => ({
+      const featureMap = new Map((features ?? []).map((f: Feature) => [f.id, f]));
+      return (versions ?? []).map((v: Version) => ({
         ...v,
         feature: featureMap.get(v.feature_id),
       }));
@@ -200,6 +200,7 @@ export function useCreateVersion() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["versions"] });
       qc.invalidateQueries({ queryKey: ["versions-with-features"] });
+      qc.invalidateQueries({ queryKey: ["roadmap-versions-features"] });
       toast.success("Version created");
     },
     onError: (e) => toast.error(e.message),
@@ -249,6 +250,7 @@ export function useUpdateVersion() {
     onSuccess: (_data, { id }) => {
       qc.invalidateQueries({ queryKey: ["versions"] });
       qc.invalidateQueries({ queryKey: ["versions-with-features"] });
+      qc.invalidateQueries({ queryKey: ["roadmap-versions-features"] });
       qc.invalidateQueries({ queryKey: ["score-history", id] });
       toast.success("Version updated");
     },
@@ -266,6 +268,7 @@ export function useDeleteVersion() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["versions"] });
       qc.invalidateQueries({ queryKey: ["versions-with-features"] });
+      qc.invalidateQueries({ queryKey: ["roadmap-versions-features"] });
       toast.success("Version deleted");
     },
     onError: (e) => toast.error(e.message),

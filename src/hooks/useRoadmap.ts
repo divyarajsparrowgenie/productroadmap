@@ -158,7 +158,7 @@ function computeTimeUnits(zoom: ZoomLevel, minDate: Date, maxDate: Date): TimeUn
 
 export function useRoadmap(zoom: ZoomLevel) {
   const versionsQuery = useQuery({
-    queryKey: ["versions-with-features"],
+    queryKey: ["roadmap-versions-features"],
     queryFn: async () => {
       const { data: versions, error: vErr } = await supabase
         .from("versions")
@@ -167,7 +167,7 @@ export function useRoadmap(zoom: ZoomLevel) {
       if (vErr) throw vErr;
       const { data: features, error: fErr } = await supabase.from("features").select("*");
       if (fErr) throw fErr;
-      return { versions: versions as Version[], features: features as Feature[] };
+      return { versions: (versions ?? []) as Version[], features: (features ?? []) as Feature[] };
     },
   });
 
@@ -222,7 +222,7 @@ export function useRoadmap(zoom: ZoomLevel) {
       };
     }
 
-    const { versions, features } = versionsQuery.data;
+    const { versions = [], features = [] } = versionsQuery.data;
     const taskCountMap = tasksQuery.data ?? {};
     const milestones = milestonesQuery.data ?? [];
 
