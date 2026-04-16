@@ -56,7 +56,21 @@ serve(async (req) => {
       body: body ? JSON.stringify(body) : undefined,
     });
 
-    const data = jiraRes.ok ? await jiraRes.json().catch(() => ({})) : await jiraRes.text();
+    // If Jira returned an error, parse it and return a proper JSON error object
+    if (!jiraRes.ok) {
+      const errText = await jiraRes.text();
+      let errMsg = `HTTP ${jiraRes.status}`;
+      try {
+        const errJson = JSON.parse(errText);
+        errMsg = errJson.errorMessages?.[0] ?? errJson.message ?? errJson.error ?? errMsg;
+      } catch { /* non-JSON body, use status code */ }
+      return new Response(JSON.stringify({ error: errMsg }), {
+        status: jiraRes.status,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const data = await jiraRes.json().catch(() => ({}));
 
     // Update last_sync_at
     if (method === "GET") {

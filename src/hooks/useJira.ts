@@ -13,7 +13,7 @@ export type JiraConnection = {
   created_at: string;
 };
 
-async function callJiraProxy(method: string, path: string, body?: unknown) {
+export async function callJiraProxy(method: string, path: string, body?: unknown) {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error("Not authenticated");
 
@@ -28,8 +28,12 @@ async function callJiraProxy(method: string, path: string, body?: unknown) {
   });
 
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err.error || "Jira request failed");
+    const err = await res.json().catch(() => ({ error: res.statusText || "Jira request failed" }));
+    throw new Error(
+      typeof err === "string"
+        ? err
+        : err.error ?? err.message ?? err.errorMessages?.[0] ?? "Jira request failed"
+    );
   }
   return res.json();
 }

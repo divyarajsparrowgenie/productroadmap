@@ -211,6 +211,7 @@ export type Database = {
           email: string
           api_token: string
           project_key: string | null
+          last_sync_at: string | null
           created_at: string
         }
         Insert: {
@@ -220,6 +221,7 @@ export type Database = {
           email: string
           api_token: string
           project_key?: string | null
+          last_sync_at?: string | null
           created_at?: string
         }
         Update: {
@@ -229,6 +231,7 @@ export type Database = {
           email?: string
           api_token?: string
           project_key?: string | null
+          last_sync_at?: string | null
           created_at?: string
         }
         Relationships: []

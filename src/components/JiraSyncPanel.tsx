@@ -9,7 +9,7 @@ import { formatDistanceToNow } from "date-fns";
 
 export default function JiraSyncPanel() {
   const { data: conn } = useJiraConnection();
-  const { data: projects = [] } = useJiraProjects();
+  const { data: projects = [], isError: projectsError, error: projectsErr } = useJiraProjects();
   const importMutation = useJiraImport();
   const [selectedProject, setSelectedProject] = useState<string>("");
 
@@ -28,6 +28,11 @@ export default function JiraSyncPanel() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {projectsError && (
+          <div className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">
+            Failed to load Jira projects: {(projectsErr as Error)?.message ?? "Unknown error"}
+          </div>
+        )}
         <div className="flex items-end gap-3">
           <div className="flex-1">
             <label className="text-xs text-muted-foreground mb-1 block">Import from project</label>

@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useJiraConnection, useSaveJiraConfig, useDeleteJiraConfig } from "@/hooks/useJira";
+import { useJiraConnection, useSaveJiraConfig, useDeleteJiraConfig, callJiraProxy } from "@/hooks/useJira";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Trash2 } from "lucide-react";
+import { CheckCircle, Trash2, Wifi } from "lucide-react";
+import { toast } from "sonner";
 
 export default function JiraSetup() {
   const { data: conn, isLoading } = useJiraConnection();
@@ -24,8 +25,22 @@ export default function JiraSetup() {
     }
   }, [conn]);
 
+  const [testing, setTesting] = useState(false);
+
   const handleSave = () => {
     save.mutate({ base_url: baseUrl.trim(), email: email.trim(), api_token: apiToken, project_key: projectKey.trim() || undefined });
+  };
+
+  const handleTest = async () => {
+    setTesting(true);
+    try {
+      const me = await callJiraProxy("GET", "myself");
+      toast.success(`Connected! Logged in as ${me.emailAddress ?? me.displayName ?? "Jira user"}`);
+    } catch (e: any) {
+      toast.error(`Connection failed: ${e.message}`);
+    } finally {
+      setTesting(false);
+    }
   };
 
   return (
@@ -62,10 +77,16 @@ export default function JiraSetup() {
             <Input placeholder="e.g. MYPROJ" value={projectKey} onChange={(e) => setProjectKey(e.target.value)} />
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button onClick={handleSave} disabled={save.isPending || !baseUrl || !email}>
             {save.isPending ? "Saving…" : conn ? "Update Connection" : "Connect Jira"}
           </Button>
+          {conn && (
+            <Button variant="outline" onClick={handleTest} disabled={testing}>
+              <Wifi className="h-4 w-4 mr-1" />
+              {testing ? "Testing…" : "Test Connection"}
+            </Button>
+          )}
           {conn && (
             <Button variant="destructive" size="sm" onClick={() => remove.mutate()}>
               <Trash2 className="h-4 w-4 mr-1" />Disconnect
